@@ -3,11 +3,11 @@ package es.zed.library;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tree<T> {
+public class TreeSearch<T> {
 
 	private final List<Node<T>> treeNode;
 
-	public Tree() {
+	public TreeSearch() {
 		this.treeNode = new ArrayList<>();
 	}
 
