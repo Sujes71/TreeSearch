@@ -1,7 +1,6 @@
 package es.zed;
 
 import es.zed.core.MorseTranslator;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) {

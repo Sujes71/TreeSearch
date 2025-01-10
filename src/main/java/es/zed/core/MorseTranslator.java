@@ -36,20 +36,30 @@ public class MorseTranslator {
 		return tree;
 	}
 
-	private void calculateChildren(Node<String> node, String target, int depth) {
+	private void calculateChildren(Node<String> parentNode, String target, int depth) {
 		List<Node<String>> nodes = new ArrayList<>();
 		for (int i = 1; i <= Math.min(target.length(), 4); i++) {
 			String morseValue = getMorseValue(null, target, i);
-			if (morseValue == null) continue;
+			if (Objects.nonNull(morseValue)) {
+				Node<String> childNode = new Node<>(depth + 1, morseValue);
+				if (nodes.contains(parentNode)){
+					nodes.remove(parentNode);
+				}
+				else {
+					nodes.add(childNode);
+				}
 
-			Node<String> childNode = new Node<>(depth + 1, morseValue);
-			if (nodes.contains(node)) nodes.remove(node);
-			else nodes.add(childNode);
-			if (Objects.isNull(node)) this.node.addChild(childNode);
-			else this.node.findNode(node).addChild(childNode);
+				if (Objects.isNull(parentNode)) {
+					this.node.addChild(childNode);
+				}
+				else {
+					this.node.findNode(parentNode).addChild(childNode);
+				}
+			}
+
 			if (i == 4) {
-				for (Node<String> n : nodes) {
-					calculateChildren(n, target.substring(i), depth + 1);
+				for (Node<String> parent : nodes) {
+					calculateChildren(parent, target.substring(i), depth + 1);
 				}
 			}
 		}
