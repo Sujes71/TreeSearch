@@ -2,6 +2,7 @@ package es.zed.library;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Node<T> {
 
@@ -31,6 +32,22 @@ public class Node<T> {
     return children.size();
   }
 
+  public Node<T> findNode(Node<T> target) {
+    if (this.equals(target)) {
+      return this; // Si el nodo actual es el objetivo, lo retornamos.
+    }
+
+    for (Node<T> child : this.children) {
+      Node<T> result = child.findNode(target); // Llamada recursiva en los hijos.
+      if (result != null) {
+        return result; // Si encontramos el nodo en algún hijo, lo retornamos.
+      }
+    }
+
+    return null;
+  }
+
+
   public void addChild(Node<T> child) {
     this.children.add(child);
   }
@@ -46,5 +63,20 @@ public class Node<T> {
         ", value=" + value +
         ", children=" + children +
         '}';
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Node<?> node = (Node<?>) o;
+    return depth == node.depth && Objects.equals(value, node.value) && Objects.equals(children,
+        node.children);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(depth, value, children);
   }
 }
