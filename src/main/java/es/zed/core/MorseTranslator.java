@@ -4,9 +4,7 @@ import es.zed.classes.MorseFileReader;
 import es.zed.classes.WordFileReader;
 import es.zed.library.Node;
 import es.zed.library.TreeSearch;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,25 +19,30 @@ public class MorseTranslator {
 		tree = new TreeSearch<>();
 	}
 
-	public TreeSearch<String> calculateTree(String value, String target, Integer depth) {
-		List<String> values = new ArrayList<>();
+	public TreeSearch<String> calculateTree(String value, String target, int depth) {
+		for (int i = 1; i <= Math.min(target.length(), 4); i++) {
+			String morseValue = getMorseValue(value, target, i);
+			if (morseValue == null) continue;
 
-		for (int i = 1; i <= (Math.min(target.length(), 4)) ; i++) {
-			values.add(MorseFileReader.getMorseKey(morseMap, value == null ? target.substring(0, i) : value));
-			Node<String> node = new Node<>(depth, values.get(i - 1));
+			Node<String> node = new Node<>(depth, morseValue);
 			calculateChildren(node, target.substring(i), depth);
 			tree.addNode(node);
 		}
 		return tree;
 	}
 
-	public void calculateChildren(Node<String> node, String target, Integer depth) {
-		List<String> values = new ArrayList<>();
+	private void calculateChildren(Node<String> node, String target, int depth) {
+		for (int i = 1; i <= Math.min(target.length(), 4); i++) {
+			String morseValue = getMorseValue(null, target, i);
+			if (morseValue == null) continue;
 
-		for (int i = 1; i <= (Math.min(target.length(), 4)) ; i++) {
-			values.add(MorseFileReader.getMorseKey(morseMap, target.substring(0, i)));
-			Node<String> childNode = new Node<>(depth + 1, values.get(i - 1));
+			Node<String> childNode = new Node<>(depth + 1, morseValue);
 			node.addChild(childNode);
 		}
+	}
+
+	private String getMorseValue(String value, String target, int length) {
+		String segment = value == null ? target.substring(0, length) : value;
+		return MorseFileReader.getMorseKey(morseMap, segment);
 	}
 }
