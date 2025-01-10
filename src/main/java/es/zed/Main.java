@@ -1,8 +1,12 @@
 package es.zed;
 
-public class Main {
+import es.zed.core.MorseTranslator;
+import java.util.List;
 
+public class Main {
   public static void main(String[] args) {
-    System.out.println("Hello, World!");
+    MorseTranslator translator = new MorseTranslator();
+
+    System.out.println(translator.calculateTree(null, "--.--.---.......-.---.-.-.-..-.....--..-....-.-----..-", 0));
   }
 }
