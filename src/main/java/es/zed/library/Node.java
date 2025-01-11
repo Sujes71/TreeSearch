@@ -10,7 +10,7 @@ public class Node<T> {
   private T value;
   private List<Node<T>> children;
 
-  public Node(int depth, T value) {
+  public Node(T value, int depth) {
     this.depth = depth;
     this.value = value;
     this.children = new ArrayList<>();
