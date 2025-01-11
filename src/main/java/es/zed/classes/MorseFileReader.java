@@ -22,7 +22,7 @@ public class MorseFileReader {
 			while ((line = reader.readLine()) != null) {
 				String[] parts = line.split(":");
 				if (parts.length == 2) {
-					String key = parts[0].trim();
+					String key = parts[0].trim().toLowerCase();
 					String value = parts[1].trim().toLowerCase();
 					morseMap.put(key, value);
 				}
