@@ -29,7 +29,7 @@ public class TreeSearch {
 			.peek(System.out::println)
 			.count();
 
-		System.out.println("Total number of valid paths: " + validPathsCount);
+		System.out.println("\nTotal number of valid paths: " + validPathsCount);
 	}
 
 	private void traversePaths(Node<String> node, List<String> path, Set<String> set, Set<List<String>> uniquePaths, Integer depth) {
