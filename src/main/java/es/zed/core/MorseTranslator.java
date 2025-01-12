@@ -21,6 +21,10 @@ public class MorseTranslator {
 	}
 
 	public TreeSearch calculateTree(String target) {
+		if (target == null || target.isEmpty()) {
+			throw new IllegalArgumentException("Target cannot be null or empty");
+		}
+
 		for (int i = 1; i <= Math.min(target.length(), 4); i++) {
 			String morseValue = getMorseValue(target, i);
 			if (morseValue == null) continue;
@@ -29,17 +33,22 @@ public class MorseTranslator {
 			populateChildren(rootNode, target.substring(i), 0);
 			tree.addNode(rootNode);
 		}
+
 		return tree;
 	}
 
 	private void populateChildren(Node<String> parentNode, String target, int depth) {
+		if (target.isEmpty()) return;
+
 		List<Node<String>> childNodes = generateChildNodes(parentNode, target, depth);
 
 		for (Node<String> childNode : childNodes) {
 			String remainingTarget = target.substring(getSegmentLength(childNode));
-			if (childNode.getValue().length() <= 4 && remainingTarget.isEmpty() && isExactMatch(childNode.getValue())) {
+
+			if (isExactMatch(childNode.getValue()) && remainingTarget.isEmpty()) {
 				childNode.setValid(true);
 			}
+
 			populateChildren(childNode, remainingTarget, depth + 1);
 		}
 	}
@@ -55,27 +64,25 @@ public class MorseTranslator {
 
 			if (isPrefixMatch(combinedValue)) {
 				Node<String> childNode = new Node<>(combinedValue, depth + 1);
-				addNodeAndHandleDoubleChild(parentNode, morseValue, combinedValue, depth, childNode, childNodes);
+				handleDoubleChild(parentNode, morseValue, combinedValue, depth, childNode, childNodes);
+				parentNode.addChild(childNode);
 			}
 		}
 
 		return childNodes;
 	}
 
-	private void addNodeAndHandleDoubleChild(Node<String> parentNode, String morseValue, String combinedValue, int depth, Node<String> childNode, List<Node<String>> childNodes) {
+	private void handleDoubleChild(Node<String> parentNode, String morseValue, String combinedValue, int depth, Node<String> childNode, List<Node<String>> childNodes) {
 		Node<String> doubleChild = createDoubleChildIfNeeded(parentNode, morseValue, depth);
 
-		if (!childNodes.contains(parentNode)) {
-			childNodes.add(childNode);
-			if (doubleChild != null) {
-				childNodes.add(doubleChild);
-			}
-		}
-
-		if (doubleChild != null) {
+		if (doubleChild != null && !childNodes.contains(doubleChild)) {
+			childNodes.add(doubleChild);
 			parentNode.addChild(doubleChild);
 		}
-		parentNode.addChild(childNode);
+
+		if (!childNodes.contains(childNode)) {
+			childNodes.add(childNode);
+		}
 	}
 
 	private Node<String> createDoubleChildIfNeeded(Node<String> parentNode, String morseValue, int depth) {
