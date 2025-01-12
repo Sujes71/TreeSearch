@@ -1,8 +1,10 @@
 package es.zed.library;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TreeSearch<T> {
 
@@ -21,48 +23,43 @@ public class TreeSearch<T> {
 		return treeNode.get(index);
 	}
 
-	public void printAllValues(Set<String> set) {
-		for (Node<T> rootNode : treeNode) {
-			printNodeValues(rootNode, set);
-		}
-	}
-
-	private void printNodeValues(Node<T> node, Set<String> set) {
-		if (node == null)
-			return;
-
-		if (node.getValue() instanceof String value) {
-			if (set.contains(value)) {
-				System.out.println(value);
-			}
-		}
-	}
-
-	/**
-	 * Recorre todos los caminos posibles desde la raíz a las hojas y los imprime.
-	 */
 	public void printAllPaths(Set<String> set) {
+		Set<List<T>> uniquePaths = new HashSet<>();
 		for (Node<T> rootNode : treeNode) {
-			List<T> path = new ArrayList<>();
-			traversePaths(rootNode, path, set);
+			traversePaths(rootNode, new ArrayList<>(), set, uniquePaths);
 		}
+
+		uniquePaths.stream()
+			.filter(path -> !path.isEmpty())
+			.forEach(System.out::println);
 	}
 
-	private void traversePaths(Node<T> node, List<T> path, Set<String> set) {
+	private void traversePaths(Node<T> node, List<T> path, Set<String> set, Set<List<T>> uniquePaths) {
 		if (node == null) return;
 
 		if (node.getValue() instanceof String value && set.contains(value)) {
+			path = deleteShort(path, value);
 			path.add(node.getValue());
 		}
-		if (node.getChildren().isEmpty()) {
-			System.out.println(path);
+
+		if (node.getChildren().isEmpty() && !path.isEmpty()) {
+			uniquePaths.add(new ArrayList<>(path));
 		} else {
 			for (Node<T> child : node.getChildren()) {
-				traversePaths(child, new ArrayList<>(path), set);
+				traversePaths(child, new ArrayList<>(path), set, uniquePaths);
 			}
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private List<T> deleteShort(List<T> path, String value) {
+		List<String> stringPath = (List<String>) path;
+		List<String> updatedPath = stringPath.stream()
+			.filter(word -> !value.startsWith(word))
+			.collect(Collectors.toList());
+
+		return (List<T>) updatedPath;
+	}
 
 	@Override
 	public String toString() {

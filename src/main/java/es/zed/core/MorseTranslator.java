@@ -4,19 +4,14 @@ import es.zed.classes.MorseFileReader;
 import es.zed.classes.WordFileReader;
 import es.zed.library.Node;
 import es.zed.library.TreeSearch;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
 
 public class MorseTranslator {
 
 	private final Map<String, String> morseMap;
 	private final Set<String> words;
 	private final TreeSearch<String> tree;
-
-	private Node<String> rootNode;
 
 	public MorseTranslator() {
 		this.morseMap = MorseFileReader.loadMorseMap("morse.txt");
@@ -29,7 +24,7 @@ public class MorseTranslator {
 			String morseValue = getMorseValue(value, target, i);
 			if (morseValue == null) continue;
 
-			rootNode = new Node<>(morseValue, 0);
+			Node<String> rootNode = createRootNode(morseValue);
 			populateChildren(rootNode, target.substring(i), 0);
 			tree.addNode(rootNode);
 		}
@@ -37,31 +32,59 @@ public class MorseTranslator {
 	}
 
 	private void populateChildren(Node<String> parentNode, String target, int depth) {
+		List<Node<String>> childNodes = generateChildNodes(parentNode, target, depth);
+
+		for (Node<String> childNode : childNodes) {
+			String remainingTarget = target.substring(getSegmentLength(childNode));
+			populateChildren(childNode, remainingTarget, depth + 1);
+		}
+	}
+
+	private List<Node<String>> generateChildNodes(Node<String> parentNode, String target, int depth) {
 		List<Node<String>> childNodes = new ArrayList<>();
 
 		for (int i = 1; i <= Math.min(target.length(), 4); i++) {
 			String morseValue = getMorseValue(null, target, i);
 			if (morseValue == null) continue;
 
-			String combinedValue = isExactMatch(parentNode.getValue())
-				? morseValue
-				: parentNode.getValue().concat(morseValue);
+			String combinedValue = getCombinedValue(parentNode, morseValue);
 
 			if (isPrefixMatch(combinedValue)) {
 				Node<String> childNode = new Node<>(combinedValue, depth + 1);
-
-				if (!childNodes.contains(parentNode)) {
-					childNodes.add(childNode);
-				}
-				parentNode.addChild(childNode);
-
+				addNodeAndHandleDoubleChild(parentNode, morseValue, combinedValue, depth, childNode, childNodes);
 			}
 		}
 
-		for (Node<String> childNode : childNodes) {
-			String remainingTarget = target.substring(getSegmentLength(childNode));
-			populateChildren(childNode, remainingTarget, depth + 1);
+		return childNodes;
+	}
+
+	private void addNodeAndHandleDoubleChild(Node<String> parentNode, String morseValue, String combinedValue, int depth, Node<String> childNode, List<Node<String>> childNodes) {
+		Node<String> doubleChild = createDoubleChildIfNeeded(parentNode, morseValue, depth);
+
+		if (!childNodes.contains(parentNode)) {
+			childNodes.add(childNode);
+			if (doubleChild != null) {
+				childNodes.add(doubleChild);
+			}
 		}
+
+		if (doubleChild != null) {
+			parentNode.addChild(doubleChild);
+		}
+		parentNode.addChild(childNode);
+	}
+
+	private Node<String> createDoubleChildIfNeeded(Node<String> parentNode, String morseValue, int depth) {
+		if (isExactMatch(parentNode.getValue()) && hasMultiplePrefix(parentNode.getValue())) {
+			return new Node<>(parentNode.getValue().concat(morseValue), depth + 1);
+		}
+		return null;
+	}
+
+	private String getCombinedValue(Node<String> parentNode, String morseValue) {
+		return isExactMatch(parentNode.getValue())
+			? morseValue
+			: parentNode.getValue().concat(morseValue);
 	}
 
 	private String getMorseValue(String value, String target, int length) {
@@ -74,10 +97,7 @@ public class MorseTranslator {
 	}
 
 	private boolean hasMultiplePrefix(String value) {
-		long count = words.stream()
-			.filter(word -> word.startsWith(value))
-			.count();
-		return count > 1;
+		return words.stream().filter(word -> word.startsWith(value)).count() > 1;
 	}
 
 	private boolean isExactMatch(String value) {
@@ -86,6 +106,10 @@ public class MorseTranslator {
 
 	private int getSegmentLength(Node<String> node) {
 		String lastChar = node.getValue().substring(node.getValue().length() - 1);
-		return morseMap.get(lastChar).length();
+		return morseMap.getOrDefault(lastChar, "").length();
+	}
+
+	private Node<String> createRootNode(String morseValue) {
+		return new Node<>(morseValue, 0);
 	}
 }
