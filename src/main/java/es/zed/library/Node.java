@@ -3,9 +3,11 @@ package es.zed.library;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Node<T> {
 
+  private UUID id;
   private int depth;
   private T value;
   private List<Node<T>> children;
@@ -14,6 +16,7 @@ public class Node<T> {
     this.depth = depth;
     this.value = value;
     this.children = new ArrayList<>();
+    this.id = UUID.randomUUID();
   }
 
   public T getValue() {
@@ -34,13 +37,13 @@ public class Node<T> {
 
   public Node<T> findNode(Node<T> target) {
     if (this.equals(target)) {
-      return this; // Si el nodo actual es el objetivo, lo retornamos.
+      return this;
     }
 
     for (Node<T> child : this.children) {
-      Node<T> result = child.findNode(target); // Llamada recursiva en los hijos.
+      Node<T> result = child.findNode(target);
       if (result != null) {
-        return result; // Si encontramos el nodo en algún hijo, lo retornamos.
+        return result;
       }
     }
 
@@ -71,8 +74,7 @@ public class Node<T> {
       return false;
     }
     Node<?> node = (Node<?>) o;
-    return depth == node.depth && Objects.equals(value, node.value) && Objects.equals(children,
-        node.children);
+    return Objects.equals(id, node.id);
   }
 
   @Override
