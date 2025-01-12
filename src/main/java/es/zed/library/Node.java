@@ -23,40 +23,16 @@ public class Node<T> {
     return value;
   }
 
-  public void setValue(T value) {
-    this.value = value;
+  public int getDepth() {
+    return depth;
   }
 
   public List<Node<T>> getChildren() {
     return children;
   }
 
-  public Integer getNumberOfChildren() {
-    return children.size();
-  }
-
-  public Node<T> findNode(Node<T> target) {
-    if (this.equals(target)) {
-      return this;
-    }
-
-    for (Node<T> child : this.children) {
-      Node<T> result = child.findNode(target);
-      if (result != null) {
-        return result;
-      }
-    }
-
-    return null;
-  }
-
-
   public void addChild(Node<T> child) {
     this.children.add(child);
-  }
-
-  public void removeChild(Node<T> child) {
-    this.children.remove(child);
   }
 
   @Override

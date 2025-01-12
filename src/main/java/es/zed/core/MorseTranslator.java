@@ -4,24 +4,27 @@ import es.zed.classes.MorseFileReader;
 import es.zed.classes.WordFileReader;
 import es.zed.library.Node;
 import es.zed.library.TreeSearch;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MorseTranslator {
 
 	private final Map<String, String> morseMap;
 	private final Set<String> words;
-	private final TreeSearch<String> tree;
+	private final TreeSearch tree;
 
-	public MorseTranslator() {
-		this.morseMap = MorseFileReader.loadMorseMap("morse.txt");
-		this.words = new HashSet<>(WordFileReader.readWordsFromFile("words.txt"));
-		this.tree = new TreeSearch<>();
+	public MorseTranslator(Map<String, String> morseMap, Set<String> words) {
+		this.morseMap = morseMap;
+		this.words = words;
+		this.tree = new TreeSearch();
 	}
 
-	public TreeSearch<String> calculateTree(String value, String target) {
+	public TreeSearch calculateTree(String target) {
 		for (int i = 1; i <= Math.min(target.length(), 4); i++) {
-			String morseValue = getMorseValue(value, target, i);
+			String morseValue = getMorseValue(target, i);
 			if (morseValue == null) continue;
 
 			Node<String> rootNode = createRootNode(morseValue);
@@ -44,7 +47,7 @@ public class MorseTranslator {
 		List<Node<String>> childNodes = new ArrayList<>();
 
 		for (int i = 1; i <= Math.min(target.length(), 4); i++) {
-			String morseValue = getMorseValue(null, target, i);
+			String morseValue = getMorseValue(target, i);
 			if (morseValue == null) continue;
 
 			String combinedValue = getCombinedValue(parentNode, morseValue);
@@ -87,8 +90,8 @@ public class MorseTranslator {
 			: parentNode.getValue().concat(morseValue);
 	}
 
-	private String getMorseValue(String value, String target, int length) {
-		String segment = (value == null) ? target.substring(0, length) : value;
+	private String getMorseValue(String target, int length) {
+		String segment = target.substring(0, length);
 		return MorseFileReader.getMorseKey(morseMap, segment);
 	}
 
