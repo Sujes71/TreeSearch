@@ -7,54 +7,61 @@ import java.util.UUID;
 
 public class Node<T> {
 
-  private UUID id;
-  private int depth;
-  private T value;
-  private List<Node<T>> children;
+  private final UUID id;
+  private final int depth;
+  private final T value;
+  private final List<Node<T>> children;
+  private boolean isValid;
 
   public Node(T value, int depth) {
+    this.id = UUID.randomUUID();
     this.depth = depth;
     this.value = value;
     this.children = new ArrayList<>();
-    this.id = UUID.randomUUID();
+    this.isValid = false;
   }
 
   public T getValue() {
     return value;
   }
 
-  public int getDepth() {
-    return depth;
+  public List<Node<T>> getChildren() {
+    return new ArrayList<>(children);
   }
 
-  public List<Node<T>> getChildren() {
-    return children;
+  public boolean isValid() {
+    return isValid;
+  }
+
+  public void setValid(boolean isValid) {
+    this.isValid = isValid;
   }
 
   public void addChild(Node<T> child) {
-    this.children.add(child);
+    if (Objects.nonNull(child)) {
+      this.children.add(child);
+    }
   }
 
   @Override
   public String toString() {
     return "Node{" +
-        "depth=" + depth +
+        ", depth=" + depth +
         ", value=" + value +
         ", children=" + children +
         '}';
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    Node<?> node = (Node<?>) o;
-    return Objects.equals(id, node.id);
+  public boolean equals(Object obj) {
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass()) return false;
+    Node<?> other = (Node<?>) obj;
+    return Objects.equals(id, other.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(depth, value, children);
+    return Objects.hash(id);
   }
 }

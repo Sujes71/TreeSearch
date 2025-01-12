@@ -7,69 +7,70 @@ import java.util.Set;
 
 public class TreeSearch {
 
-	private final List<Node<String>> treeNode;
+	private final List<Node<String>> treeNodes;
 
 	public TreeSearch() {
-		this.treeNode = new ArrayList<>();
+		this.treeNodes = new ArrayList<>();
 	}
 
 	public void addNode(Node<String> node) {
-		this.treeNode.add(node);
+		this.treeNodes.add(node);
 	}
 
-	public void printAllPaths(Set<String> set, Integer depth) {
+	public void printAllPaths(Set<String> words) {
 		Set<List<String>> uniquePaths = new HashSet<>();
-		for (Node<String> rootNode : treeNode) {
-			List<String> path = new ArrayList<>();
-			traversePaths(rootNode, path, set, uniquePaths, depth);
+		for (Node<String> rootNode : treeNodes) {
+			findPaths(rootNode, new ArrayList<>(), words, uniquePaths);
 		}
 
-		long validPathsCount = uniquePaths.stream()
-			.filter(path -> !path.isEmpty() && isCompletePath(path, set, uniquePaths))
-			.peek(System.out::println)
-			.count();
-
-		System.out.println("\nTotal number of valid paths: " + validPathsCount);
+		uniquePaths.stream()
+			.filter(path -> isCompletePath(path, words))
+			.forEach(System.out::println);
 	}
 
-	private void traversePaths(Node<String> node, List<String> path, Set<String> set, Set<List<String>> uniquePaths, Integer depth) {
+	private void findPaths(Node<String> node, List<String> currentPath, Set<String> words, Set<List<String>> uniquePaths) {
 		if (node == null) return;
 
 		String value = node.getValue();
 
-		if (set.contains(value)) {
-			if (!path.isEmpty() && value.startsWith(path.getLast())) {
-				path.removeLast();
-			}
-			path.add(value);
+		if (words.contains(value)) {
+			addToPath(currentPath, value);
 		}
 
-		if (node.getChildren().isEmpty() && !path.isEmpty() && node.getDepth() >= depth) {
-			uniquePaths.add(new ArrayList<>(path));
-		} else {
-			node.getChildren().forEach(child -> traversePaths(child, new ArrayList<>(path), set, uniquePaths, depth));
+		if (node.isValid()) {
+			uniquePaths.add(new ArrayList<>(currentPath));
+			return;
+		}
+
+		for (Node<String> child : node.getChildren()) {
+			findPaths(child, new ArrayList<>(currentPath), words, uniquePaths);
 		}
 	}
 
-	private boolean isCompletePath(List<String> path, Set<String> set, Set<List<String>> uniquePaths) {
-		if (path.stream().noneMatch(set::contains)) {
+	private void addToPath(List<String> path, String value) {
+		if (!path.isEmpty() && value.startsWith(path.getLast())) {
+			path.removeLast();
+		}
+		path.add(value);
+	}
+
+	private boolean isCompletePath(List<String> path, Set<String> validValues) {
+		if (path.stream().noneMatch(validValues::contains)) {
 			return false;
 		}
 
-		for (List<String> existingPath : uniquePaths) {
-			if (existingPath.size() > path.size() && new HashSet<>(existingPath).containsAll(path)) {
-				return false;
+		for (String value : validValues) {
+			if (path.contains(value)) {
+				return true;
 			}
 		}
-
-		return true;
+		return false;
 	}
-
 
 	@Override
 	public String toString() {
-		return "Tree{" +
-			"treeNode=" + treeNode +
+		return "TreeSearch{" +
+			"treeNodes=" + treeNodes +
 			'}';
 	}
 }

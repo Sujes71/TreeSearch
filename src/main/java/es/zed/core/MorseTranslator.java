@@ -37,6 +37,9 @@ public class MorseTranslator {
 
 		for (Node<String> childNode : childNodes) {
 			String remainingTarget = target.substring(getSegmentLength(childNode));
+			if (childNode.getValue().length() <= 4 && remainingTarget.isEmpty() && isExactMatch(childNode.getValue())) {
+				childNode.setValid(true);
+			}
 			populateChildren(childNode, remainingTarget, depth + 1);
 		}
 	}

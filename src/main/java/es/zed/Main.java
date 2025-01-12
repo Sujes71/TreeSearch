@@ -16,6 +16,6 @@ public class Main {
     MorseTranslator translator = new MorseTranslator(morseMap, words);
 
     TreeSearch treeSearch =  translator.calculateTree("--.--.---.......-.---.-.-.-..-.....--..-....-.-----..-");
-    treeSearch.printAllPaths(words, 15);
+    treeSearch.printAllPaths(words);
   }
 }
