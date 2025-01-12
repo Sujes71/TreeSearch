@@ -4,62 +4,67 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-public class TreeSearch<T> {
+public class TreeSearch {
 
-	private final List<Node<T>> treeNode;
+	private final List<Node<String>> treeNode;
 
 	public TreeSearch() {
 		this.treeNode = new ArrayList<>();
 	}
 
-	public void addNode(Node<T> node) {
+	public void addNode(Node<String> node) {
 		this.treeNode.add(node);
 	}
 
-	public Node<T> getNodeByIndex(Integer index) {
-		if (treeNode.isEmpty()) return null;
-		return treeNode.get(index);
-	}
-
-	public void printAllPaths(Set<String> set) {
-		Set<List<T>> uniquePaths = new HashSet<>();
-		for (Node<T> rootNode : treeNode) {
-			traversePaths(rootNode, new ArrayList<>(), set, uniquePaths);
+	public void printAllPaths(Set<String> set, Integer depth) {
+		Set<List<String>> uniquePaths = new HashSet<>();
+		for (Node<String> rootNode : treeNode) {
+			List<String> path = new ArrayList<>();
+			traversePaths(rootNode, path, set, uniquePaths, depth);
 		}
 
-		uniquePaths.stream()
-			.filter(path -> !path.isEmpty())
-			.forEach(System.out::println);
+		long validPathsCount = uniquePaths.stream()
+			.filter(path -> !path.isEmpty() && isCompletePath(path, set, uniquePaths))
+			.peek(System.out::println)
+			.count();
+
+		System.out.println("Total number of valid paths: " + validPathsCount);
 	}
 
-	private void traversePaths(Node<T> node, List<T> path, Set<String> set, Set<List<T>> uniquePaths) {
+	private void traversePaths(Node<String> node, List<String> path, Set<String> set, Set<List<String>> uniquePaths, Integer depth) {
 		if (node == null) return;
 
-		if (node.getValue() instanceof String value && set.contains(value)) {
-			path = deleteShort(path, value);
-			path.add(node.getValue());
+		String value = node.getValue();
+
+		if (set.contains(value)) {
+			if (!path.isEmpty() && value.startsWith(path.getLast())) {
+				path.removeLast();
+			}
+			path.add(value);
 		}
 
-		if (node.getChildren().isEmpty() && !path.isEmpty()) {
+		if (node.getChildren().isEmpty() && !path.isEmpty() && node.getDepth() >= depth) {
 			uniquePaths.add(new ArrayList<>(path));
 		} else {
-			for (Node<T> child : node.getChildren()) {
-				traversePaths(child, new ArrayList<>(path), set, uniquePaths);
-			}
+			node.getChildren().forEach(child -> traversePaths(child, new ArrayList<>(path), set, uniquePaths, depth));
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<T> deleteShort(List<T> path, String value) {
-		List<String> stringPath = (List<String>) path;
-		List<String> updatedPath = stringPath.stream()
-			.filter(word -> !value.startsWith(word))
-			.collect(Collectors.toList());
+	private boolean isCompletePath(List<String> path, Set<String> set, Set<List<String>> uniquePaths) {
+		if (path.stream().noneMatch(set::contains)) {
+			return false;
+		}
 
-		return (List<T>) updatedPath;
+		for (List<String> existingPath : uniquePaths) {
+			if (existingPath.size() > path.size() && new HashSet<>(existingPath).containsAll(path)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
+
 
 	@Override
 	public String toString() {
