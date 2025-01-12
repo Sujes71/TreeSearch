@@ -1,9 +1,9 @@
 package es.zed;
 
-import es.zed.classes.MorseFileReader;
-import es.zed.classes.WordFileReader;
 import es.zed.core.MorseTranslator;
-import es.zed.library.TreeSearch;
+import es.zed.domain.TreeSearch;
+import es.zed.infrastructure.MorseFileReader;
+import es.zed.infrastructure.WordFileReader;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

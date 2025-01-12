@@ -1,4 +1,4 @@
-package es.zed.library;
+package es.zed.domain;
 
 import java.util.ArrayList;
 import java.util.List;

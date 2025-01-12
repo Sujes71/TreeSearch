@@ -1,4 +1,4 @@
-package es.zed.classes;
+package es.zed.infrastructure;
 
 import java.io.BufferedReader;
 import java.io.IOException;

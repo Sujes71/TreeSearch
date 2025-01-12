@@ -1,8 +1,8 @@
 package es.zed.core;
 
-import es.zed.classes.MorseFileReader;
-import es.zed.library.Node;
-import es.zed.library.TreeSearch;
+import es.zed.domain.Node;
+import es.zed.domain.TreeSearch;
+import es.zed.infrastructure.MorseFileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
