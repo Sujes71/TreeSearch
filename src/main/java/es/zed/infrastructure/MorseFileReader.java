@@ -37,11 +37,11 @@ public class MorseFileReader {
 	}
 
 	public static String getMorseKey(Map<String, String> map, String value) {
-		for (Map.Entry<String, String> entry : map.entrySet()) {
-			if (entry.getValue().equals(value)) {
-				return entry.getKey();
-			}
-		}
-		return null;
+		return map.entrySet()
+			.stream()
+			.filter(entry -> entry.getValue().equals(value))
+			.map(Map.Entry::getKey)
+			.findFirst()
+			.orElse(null);
 	}
 }
