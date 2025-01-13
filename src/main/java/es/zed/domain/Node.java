@@ -45,8 +45,8 @@ public class Node<T> {
 
   @Override
   public String toString() {
-    return "Node{" +
-        ", depth=" + depth +
+    return "Node {" +
+        "depth=" + depth +
         ", value=" + value +
         ", children=" + children +
         '}';

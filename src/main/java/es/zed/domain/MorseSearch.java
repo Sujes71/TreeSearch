@@ -69,7 +69,7 @@ public class MorseSearch {
 
 	@Override
 	public String toString() {
-		return "TreeSearch{" +
+		return "MorseSearch {" +
 			"treeNodes=" + treeNodes +
 			'}';
 	}
