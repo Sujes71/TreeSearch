@@ -6,6 +6,7 @@ import es.zed.infrastructure.MorseFileReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class MorseTranslator {
@@ -75,7 +76,7 @@ public class MorseTranslator {
 	private void handleDoubleChild(Node<String> parentNode, String morseValue, int depth, Node<String> childNode, List<Node<String>> childNodes) {
 		Node<String> doubleChild = createDoubleChildIfNeeded(parentNode, morseValue, depth);
 
-		if (doubleChild != null && !childNodes.contains(doubleChild)) {
+		if (Objects.nonNull(doubleChild) && !childNodes.contains(doubleChild)) {
 			childNodes.add(doubleChild);
 			parentNode.addChild(doubleChild);
 		}
