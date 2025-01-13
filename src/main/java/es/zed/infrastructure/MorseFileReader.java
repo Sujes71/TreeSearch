@@ -36,10 +36,6 @@ public class MorseFileReader {
 		return morseMap;
 	}
 
-	public static String getMorseValue(Map<String, String> map, String key) {
-		return map.get(key);
-	}
-
 	public static String getMorseKey(Map<String, String> map, String value) {
 		for (Map.Entry<String, String> entry : map.entrySet()) {
 			if (entry.getValue().equals(value)) {

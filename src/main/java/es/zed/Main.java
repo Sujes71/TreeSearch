@@ -1,7 +1,7 @@
 package es.zed;
 
 import es.zed.core.MorseTranslator;
-import es.zed.domain.TreeSearch;
+import es.zed.domain.MorseSearch;
 import es.zed.infrastructure.MorseFileReader;
 import es.zed.infrastructure.WordFileReader;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ public class Main {
 
     MorseTranslator translator = new MorseTranslator(morseMap, words);
 
-    TreeSearch treeSearch =  translator.calculateTree("--.--.---.......-.---.-.-.-..-.....--..-....-.-----..-");
-    treeSearch.printAllPaths(words);
+    MorseSearch morseSearch =  translator.calculateTree("--.--.---.......-.---.-.-.-..-.....--..-....-.-----..-");
+    morseSearch.printAllPaths(words);
   }
 }

@@ -1,7 +1,7 @@
 package es.zed.core;
 
+import es.zed.domain.MorseSearch;
 import es.zed.domain.Node;
-import es.zed.domain.TreeSearch;
 import es.zed.infrastructure.MorseFileReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +12,15 @@ public class MorseTranslator {
 
 	private final Map<String, String> morseMap;
 	private final Set<String> words;
-	private final TreeSearch tree;
+	private final MorseSearch morseSearch;
 
 	public MorseTranslator(Map<String, String> morseMap, Set<String> words) {
 		this.morseMap = morseMap;
 		this.words = words;
-		this.tree = new TreeSearch();
+		this.morseSearch = new MorseSearch();
 	}
 
-	public TreeSearch calculateTree(String target) {
+	public MorseSearch calculateTree(String target) {
 		if (target == null || target.isEmpty()) {
 			throw new IllegalArgumentException("Target cannot be null or empty");
 		}
@@ -31,10 +31,10 @@ public class MorseTranslator {
 
 			Node<String> rootNode = createRootNode(morseValue);
 			populateChildren(rootNode, target.substring(i), 0);
-			tree.addNode(rootNode);
+			morseSearch.addNode(rootNode);
 		}
 
-		return tree;
+		return morseSearch;
 	}
 
 	private void populateChildren(Node<String> parentNode, String target, int depth) {
@@ -64,7 +64,7 @@ public class MorseTranslator {
 
 			if (isPrefixMatch(combinedValue)) {
 				Node<String> childNode = new Node<>(combinedValue, depth + 1);
-				handleDoubleChild(parentNode, morseValue, combinedValue, depth, childNode, childNodes);
+				handleDoubleChild(parentNode, morseValue, depth, childNode, childNodes);
 				parentNode.addChild(childNode);
 			}
 		}
@@ -72,7 +72,7 @@ public class MorseTranslator {
 		return childNodes;
 	}
 
-	private void handleDoubleChild(Node<String> parentNode, String morseValue, String combinedValue, int depth, Node<String> childNode, List<Node<String>> childNodes) {
+	private void handleDoubleChild(Node<String> parentNode, String morseValue, int depth, Node<String> childNode, List<Node<String>> childNodes) {
 		Node<String> doubleChild = createDoubleChildIfNeeded(parentNode, morseValue, depth);
 
 		if (doubleChild != null && !childNodes.contains(doubleChild)) {
